@@ -23,6 +23,7 @@
 #include "rcu-string.h"
 #include "backref.h"
 #include "disk-io.h"
+#include <linux/uaccess.h>
 
 static struct kmem_cache *extent_state_cache;
 static struct kmem_cache *extent_buffer_cache;
@@ -5643,7 +5644,7 @@ int read_extent_buffer_to_user_nofault(const struct extent_buffer *eb,
 
 		cur = min(len, (PAGE_SIZE - offset));
 		kaddr = page_address(page);
-		if (probe_user_write(dst, kaddr + offset, cur)) {
+		if (fault_in_pages_writeable(dst, cur)) {
 			ret = -EFAULT;
 			break;
 		}

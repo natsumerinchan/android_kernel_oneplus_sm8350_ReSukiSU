@@ -2189,7 +2189,7 @@ static noinline int copy_to_sk(struct btrfs_path *path,
 		 * problem. Otherwise we'll fault and then copy the buffer in
 		 * properly this next time through
 		 */
-		if (probe_user_write(ubuf + *sk_offset, &sh, sizeof(sh))) {
+		if (fault_in_pages_writeable(ubuf + *sk_offset, sizeof(sh))) {
 			ret = 0;
 			goto out;
 		}
