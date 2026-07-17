@@ -76,9 +76,9 @@ ifdef CONFIG_SND_SOC_AW882XX
 	AW882XX_OBJS += aw_monitor.o
 	AW882XX_OBJS += aw_spin.o
 	AW882XX_OBJS += aw882xx.o
-        ifdef OPLUS_FEATURE_SMARTPA_PM
-        AW882XX_OBJS += smartpa_pm/smartpa_pm.o
-        endif
+#        ifdef OPLUS_FEATURE_SMARTPA_PM
+#        AW882XX_OBJS += smartpa_pm/smartpa_pm.o
+#        endif
 endif
 
 LINUX_INC +=	-Iinclude/linux

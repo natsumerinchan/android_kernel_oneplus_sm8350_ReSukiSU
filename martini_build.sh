@@ -51,7 +51,7 @@ build_kernel() {
     cd $KERNEL_PATH
     export PATH=~/toolchains/clang-aosp/bin:$PATH
     make -j$(nproc --all) O=out ARCH=arm64 CLANG_TRIPLE=aarch64-linux-gnu- CC="ccache clang" CXX="ccache clang++" $BUILD_EXTRA_COMMAND $KERNEL_DEFCONFIG
-    time make -j$(nproc --all) O=out ARCH=arm64 CLANG_TRIPLE=aarch64-linux-gnu- CC="ccache clang" CXX="ccache clang++" $BUILD_EXTRA_COMMAND
+    time make -j$(nproc --all) O=out ARCH=arm64 CLANG_TRIPLE=aarch64-linux-gnu- CC="ccache clang" CXX="ccache clang++" $BUILD_EXTRA_COMMAND | tee ./kernel-build.log
 }
 
 make_anykernel3() {
@@ -68,8 +68,19 @@ make_anykernel3() {
         mv $KERNEL_PATH/AnyKernel3/Anykernel3.zip $KERNEL_PATH/out/arch/arm64/boot
         rm -r $KERNEL_PATH/AnyKernel3/$KERNEL_FILE
         cd $KERNEL_PATH
-        echo [INFO] Products are put in $KERNEL_PATH/out/arch/arm64/boot
-        echo [INFO] Done.
+    fi
+}
+
+make_kernel_module_loader() {
+    cd $KERNEL_PATH
+    test -d $KERNEL_PATH/Kernel_Module_Loader || git clone https://github.com/natsumerinchan/Kernel_Module_Loader.git
+    if test -e $KERNEL_PATH/out/drivers/staging/qcacld-3.0/wlan.ko && test -d $KERNEL_PATH/Kernel_Module_Loader; then
+        cp $KERNEL_PATH/out/drivers/staging/qcacld-3.0/wlan.ko $KERNEL_PATH/Kernel_Module_Loader/kernel_module
+        cd $KERNEL_PATH/Kernel_Module_Loader
+        zip -r Kernel_Module_Loader.zip *
+        mv $KERNEL_PATH/Kernel_Module_Loader/Kernel_Module_Loader.zip $KERNEL_PATH/out/arch/arm64/boot
+        rm -r $KERNEL_PATH/Kernel_Module_Loader/kernel_module/wlan.ko
+        cd $KERNEL_PATH
     fi
 }
 
@@ -86,3 +97,6 @@ fi
 setup_kernelsu
 build_kernel
 make_anykernel3
+make_kernel_module_loader
+echo [INFO] Products are put in $KERNEL_PATH/out/arch/arm64/boot
+echo [INFO] Done.

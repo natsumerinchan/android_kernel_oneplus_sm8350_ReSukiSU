@@ -156,3 +156,5 @@ Android.bp
 /KernelSU
 /out
 /AnyKernel3
+*.log
+/Kernel_Module_Loader
